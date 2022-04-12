@@ -9,6 +9,27 @@ Lin Hao Yuan
 */
 
 --< The SQL/DDL code that creates your schema >
+CREATE TABLE Employee (
+	ssn	       char(9) PRIMARY KEY,
+	start_date     char(8), --Dates are of the form XX/XX/XX--
+	title          char(15),
+	hourly_rate    number(2)
+)
+CREATE TABLE Location (
+	locID          char(5) PRIMARY KEY,
+	address        char(25),
+	capacity       number(3)
+)
+CREATE TABLE Dish (
+	dname          char(15) PRIMARY KEY,
+	dprice         number(3),
+	dcalories      number(4),
+	allergies      char(25) --TODO: modify this so it's a MV attribute--
+)
+CREATE TABLE Vendor (
+	vname          char(15),
+	vid            number(5) PRIMARY KEY
+)
 --In the DDL, every IC must have a unique name; e.g. IC5, IC10, IC15, etc.
 
 --

@@ -31,6 +31,8 @@ CREATE TABLE Vendor (
 	vid            number(5) PRIMARY KEY
 )
 --In the DDL, every IC must have a unique name; e.g. IC5, IC10, IC15, etc.
+CONSTRAINT employeePayOverZero CHECK (Employee.hourly_rate > 0);
+CONSTRAINT managerPay CHECK (NOT(Employee.title = 'Manager' AND Employee.hourly_rate <= 20));
 
 --
 SET FEEDBACK OFF
@@ -44,7 +46,10 @@ COMMIT;
 --
 
 --< One query (per table) of the form: SELECT * FROM table; in order to display your database >
-
+SELECT * from Employee;
+SELECT * from Dish;
+SELECT * from Vendor;
+SELECT * from Location;
 --
 /*< The SQL queries>. Include the following for each query:
 − A comment line stating the query number and the feature(s) it demonstrates

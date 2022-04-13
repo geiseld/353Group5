@@ -37,7 +37,7 @@ CREATE TABLE Ingredient (
 	name           char(15) PRIMARY KEY
 );
 CREATE TABLE Supply (
-	vendor_id      INTEGER PRIMARY KEY,
+	vendor_id      INTEGER,
 	location_id    char(5),
 	ingredient     char(15),
 	date           char(8),
@@ -74,7 +74,41 @@ ALTER TABLE Location
 ADD FOREIGN KEY (mgr_ssn) references Employee(ssn)
 Deferrable initially deferred;
 --
-
+ALTER TABLE Supply
+ADD FOREIGN KEY (vendor_id) references Vendor(vid)
+Deferrable initally deferred;
+--
+ALTER TABLE Supply
+ADD FOREIGN KEY (location_id) references Location(locID)
+Deferrable initially deferred;
+--
+ALTER TABLE Allergies
+ADD FOREIGN KEY (dish_name) references Dish(dname)
+Deferrable initially deferred;
+--
+ALTER TABLE Suppliers
+ADD FOREIGN KEY (vendor_id) references Vendor(vid)
+Deferrable initially deferred;
+--
+ALTER TABLE Suppliers
+ADD FOREIGN KEY (location_id) references Location(locID)
+Deferrable initally deferred;
+--
+ALTER TABLE DishIngredients
+ADD FOREIGN KEY (dish_name) references Dish(dname)
+Deferrable initially deferred;
+--
+ALTER TABLE DishIngredients
+ADD FOREIGN KEY (ingredients) references Ingredients(name)
+Deferrable initially deferred;
+--
+ALTER TABLE OnMenu
+ADD FOREIGN KEY (dish_name) references Dish(dname)
+Deferrable initially deferred;
+--
+ALTER TABLE OnMenu
+ADD FOREIGN KEY (location_id) references Location(locID)
+Deferrable initally deferred;
 --In the DDL, every IC must have a unique name; e.g. IC5, IC10, IC15, etc.
 CONSTRAINT employeePayOverZero CHECK (Employee.hourly_rate > 0);
 CONSTRAINT managerPay CHECK (NOT(Employee.title = 'Manager' AND Employee.hourly_rate <= 20));
@@ -95,6 +129,12 @@ SELECT * from Employee;
 SELECT * from Dish;
 SELECT * from Vendor;
 SELECT * from Location;
+SELECT * FROM Ingredient;
+SELECT * FROM Supply;
+SELECT * FROM Allergies;
+SELECT * FROM Suppliers;
+SELECT * FROM OnMenu;
+SELECT * FROM DishIngredients;
 --
 /*< The SQL queries>. Include the following for each query:
 − A comment line stating the query number and the feature(s) it demonstrates

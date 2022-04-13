@@ -59,11 +59,6 @@ CREATE TABLE DishIngredients (
 	ingredient     char(15),
 	PRIMARY KEY (dish_name, ingredient)
 );
-CREATE TABLE CanCook (
-	essn           INTEGER,
-	dish_name      char(15),
-	PRIMARY KEY (essn, dish_name)
-);
 CREATE TABLE OnMenu (
 	location_id    char(5),
 	dish_name      char(15),

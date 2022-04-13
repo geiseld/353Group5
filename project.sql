@@ -34,36 +34,51 @@ CREATE TABLE Vendor (
 	vid            INTEGER PRIMARY KEY
 );
 CREATE TABLE Ingredient (
-	ing_name       char(15) PRIMARY KEY
+	name           char(15) PRIMARY KEY
 );
 CREATE TABLE Supply (
 	vendor_id      INTEGER PRIMARY KEY,
 	location_id    char(5),
 	ingredient     char(15),
 	date           char(8),
-	quantity       INTEGER
+	quantity       INTEGER,
+	PRIMARY KEY (vendor_id, location_id, ingredient, date)
 );
 CREATE TABLE Allergies (
 	dish_name      char(15),
-	allergies      char(25)
+	allergies      char(25),
+	PRIMARY KEY (dish_name, allergies)
 );
 CREATE TABLE Suppliers (
 	vendor_id      char(5),
-	location_id    char(5)
+	location_id    char(5),
+	PRIMARY KEY (vendor_id, location_id)
 );
 CREATE TABLE DishIngredients (
-	dish_name      char(15) PRIMARY KEY,
-	ingredient     char(15)
+	dish_name      char(15),
+	ingredient     char(15),
+	PRIMARY KEY (dish_name, ingredient)
 );
 CREATE TABLE CanCook (
-	essn           INTEGER PRIMARY KEY,
-	dish_name      char(15)
+	essn           INTEGER,
+	dish_name      char(15),
+	PRIMARY KEY (essn, dish_name)
 );
 CREATE TABLE OnMenu (
-	location_id    char(5) PRIMARY KEY,
+	location_id    char(5),
 	dish_name      char(15),
-	date_added     char(8)
+	date_added     char(8),
+	PRIMARY KEY (location_id, dish_name)
 );
+
+ALTER TABLE Employee
+ADD FOREIGN KEY (location_id) references Location(loc_id)
+Deferrable initially deferred;
+--
+ALTER TABLE Location
+ADD FOREIGN KEY (mgr_ssn) references Employee(ssn)
+Deferrable initially deferred;
+--
 
 --In the DDL, every IC must have a unique name; e.g. IC5, IC10, IC15, etc.
 CONSTRAINT employeePayOverZero CHECK (Employee.hourly_rate > 0);

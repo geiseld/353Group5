@@ -148,6 +148,12 @@ Include the following items for every IC that you test (Important: see the next 
 − A comment line stating: Testing: < IC name>
 − A SQL INSERT, DELETE, or UPDATE that will test the IC.*/
 
+
+-- Testing: employeePayOverZero
+INSERT INTO Employee Values(111111111, '08/08/08', 'Line Cook', 0, 12345);
+
+-- Testing: managerPay
+INSERT INTO Employee Values(222222222, '07/07/07', 'Manager', 19, 12345);
 COMMIT;
 --
 SPOOL OFF

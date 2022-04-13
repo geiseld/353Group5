@@ -10,26 +10,61 @@ Lin Hao Yuan
 
 --< The SQL/DDL code that creates your schema >
 CREATE TABLE Employee (
-	ssn	       char(9) PRIMARY KEY,
+	ssn	       INTEGER PRIMARY KEY,
 	start_date     char(8), --Dates are of the form XX/XX/XX--
 	title          char(15),
-	hourly_rate    number(2)
-)
+	hourly_rate    INTEGER,
+	location_id    char(5)
+);
 CREATE TABLE Location (
 	locID          char(5) PRIMARY KEY,
 	address        char(25),
-	capacity       number(3)
-)
+	capacity       INTEGER,
+	mgr_ssn        INTEGER,
+	num_employees  INTEGER
+);
 CREATE TABLE Dish (
 	dname          char(15) PRIMARY KEY,
-	dprice         number(3),
-	dcalories      number(4),
+	dprice         INTEGER),
+	dcalories      INTEGER),
 	allergies      char(25) --TODO: modify this so it's a MV attribute--
-)
+);
 CREATE TABLE Vendor (
 	vname          char(15),
-	vid            number(5) PRIMARY KEY
-)
+	vid            INTEGER PRIMARY KEY
+);
+CREATE TABLE Ingredient (
+	ing_name       char(15) PRIMARY KEY
+);
+CREATE TABLE Supply (
+	vendor_id      INTEGER PRIMARY KEY,
+	location_id    char(5),
+	ingredient     char(15),
+	date           char(8),
+	quantity       INTEGER
+);
+CREATE TABLE Allergies (
+	dish_name      char(15),
+	allergies      char(25)
+);
+CREATE TABLE Suppliers (
+	vendor_id      char(5),
+	location_id    char(5)
+);
+CREATE TABLE DishIngredients (
+	dish_name      char(15) PRIMARY KEY,
+	ingredient     char(15)
+);
+CREATE TABLE CanCook (
+	essn           INTEGER PRIMARY KEY,
+	dish_name      char(15)
+);
+CREATE TABLE OnMenu (
+	location_id    char(5) PRIMARY KEY,
+	dish_name      char(15),
+	date_added     char(8)
+);
+
 --In the DDL, every IC must have a unique name; e.g. IC5, IC10, IC15, etc.
 CONSTRAINT employeePayOverZero CHECK (Employee.hourly_rate > 0);
 CONSTRAINT managerPay CHECK (NOT(Employee.title = 'Manager' AND Employee.hourly_rate <= 20));

@@ -308,6 +308,15 @@ WHERE E1.hourly_rate =
 	 WHERE E1.location_id = E2.location_id)
 ORDER BY E1.ssn;
 -- Q7 - A non-correlated subquery.
+-- Select the dish name of all dishes that do not rely on ingredients being supplied by Martys Meats.
+SELECT D.dname, D.dprice
+FROM Dish D
+WHERE D.dname NOT IN
+	(SELECT D.dname
+	 FROM Dish D, DishIngredients DI, Supply Sup, Suppliers S, Vendor V
+	 WHERE D.dname = DI.dish_name AND DI.ingredient = Sup.ingredient AND Sup.vendor_id = S.vendor_id AND 
+	       S.vendor_id = V.vid AND V.vname = 'Martys Meats')
+ORDER BY D.dname;
 -- Q8 - A relational DIVISION query.
 -- Q9 - An outer join query.
 --

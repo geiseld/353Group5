@@ -72,10 +72,15 @@ Deferrable initially deferred;
 
 Having two tables reference each other seems to cause a lot of issues, mainly with just plain inserting initial values.
 I looked it up and apparently its bad practice for this reason. So maybe just remove this FK? -Fabian
-*/
+*/ 
+--
+-- I think we should remove the foreign key below and keep the one above. -Casey
+--
+/*
 ALTER TABLE Location
 ADD FOREIGN KEY (mgr_ssn) references Employee(ssn)
 Deferrable initially deferred;
+*/
 --
 ALTER TABLE Supply
 ADD FOREIGN KEY (vendor_id) references Vendor(vid)
@@ -316,13 +321,13 @@ Include the following items for every IC that you test (Important: see the next 
 “Submit a final report” regarding which ICs you need to test).
 − A comment line stating: Testing: < IC name>
 − A SQL INSERT, DELETE, or UPDATE that will test the IC.*/
-
-
+--
+--
 -- Testing: employeePayOverZero
-INSERT INTO Employee Values(111111111, '08/08/08', 'Line Cook', 0, 12345);
+INSERT INTO Employee Values(111111112, '08/08/08', 'Line Cook', 0, 12345);
 
 -- Testing: managerPay
-INSERT INTO Employee Values(222222222, '07/07/07', 'Manager', 19, 12345);
+INSERT INTO Employee Values(222222223, '07/07/07', 'Manager', 19, 12345);
 COMMIT;
 --
 SPOOL OFF

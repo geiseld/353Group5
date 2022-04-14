@@ -65,22 +65,18 @@ CREATE TABLE OnMenu (
 	date_added     char(8),
 	PRIMARY KEY (location_id, dish_name)
 );
-/*
+CREATE TABLE WorksAt (
+	essn           INTEGER,
+	location_id    INTEGER,
+	PRIMARY KEY (essn, location_id)
+);
 ALTER TABLE Employee
-ADD FOREIGN KEY (location_id) references Location(locID)
+ADD FOREIGN KEY (location_id) references WorksAt(location_id)
 Deferrable initially deferred;
-
-Having two tables reference each other seems to cause a lot of issues, mainly with just plain inserting initial values.
-I looked it up and apparently its bad practice for this reason. So maybe just remove this FK? -Fabian
-*/ 
 --
--- I think we should remove the foreign key below and keep the one above. -Casey
---
-/*
 ALTER TABLE Location
 ADD FOREIGN KEY (mgr_ssn) references Employee(ssn)
 Deferrable initially deferred;
-*/
 --
 ALTER TABLE Supply
 ADD FOREIGN KEY (vendor_id) references Vendor(vid)
@@ -124,10 +120,8 @@ Deferrable initially deferred;
 --In the DDL, every IC must have a unique name; e.g. IC5, IC10, IC15, etc.
 CONSTRAINT employeePayOverZero CHECK (Employee.hourly_rate > 0);
 CONSTRAINT managerPay CHECK (NOT(Employee.title = 'Manager' AND Employee.hourly_rate <= 20));
-
 --
 SET FEEDBACK OFF
-
 --< The INSERT statements that populate the tables>
 --Important: Keep the number of rows in each table small enough so that the results of your
 --queries can be verified by hand. See the Sailors database as an example.
@@ -243,11 +237,9 @@ INSERT INTO OnMenu VALUES ('2', 'Chicken Alfredo', '03-25-15');
 INSERT INTO OnMenu VALUES ('2', 'Shrimp Pesto', '03-25-15');
 INSERT INTO OnMenu VALUES ('2', 'Thai Peanut Chicken Noodles', '03-25-15');
 INSERT INTO OnMenu VALUES ('2', 'Pasta Primavera', '03-25-15');
-
+--
 SET FEEDBACK ON
 COMMIT;
---
-
 --< One query (per table) of the form: SELECT * FROM table; in order to display your database >
 SELECT * from Employee;
 SELECT * from Dish;

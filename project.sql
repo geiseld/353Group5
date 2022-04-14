@@ -70,7 +70,8 @@ ALTER TABLE Employee
 ADD FOREIGN KEY (location_id) references Location(locID)
 Deferrable initially deferred;
 
-Having two tables reference each other seems to cause a lot of issues, mainly with just plain inserting initial values. I looked it up and apparently its bad practice for this reason. So maybe just remove this FK? -Fabian
+Having two tables reference each other seems to cause a lot of issues, mainly with just plain inserting initial values.
+I looked it up and apparently its bad practice for this reason. So maybe just remove this FK? -Fabian
 */
 ALTER TABLE Location
 ADD FOREIGN KEY (mgr_ssn) references Employee(ssn)
@@ -298,6 +299,14 @@ GROUP BY D.dname, D.dprice
 HAVING COUNT(*) > 2
 ORDER BY D.dprice;
 -- Q6 - A correlated subquery.
+-- Select the ssn of each employee who has the highest salary in their restaurant
+SELECT E1.ssn
+FROM Employee E1
+WHERE E1.hourly_rate = 
+	(SELECT MAX(E2.hourly_rate)
+	 FROM Employee E2
+	 WHERE E1.location_id = E2.location_id)
+ORDER BY E1.ssn;
 -- Q7 - A non-correlated subquery.
 -- Q8 - A relational DIVISION query.
 -- Q9 - An outer join query.

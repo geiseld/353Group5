@@ -14,7 +14,6 @@ CREATE TABLE Employee (
 	start_date     char(8), --Dates are of the form XX/XX/XX--
 	title          char(15),
 	hourly_rate    INTEGER,
-	location_id    char(5)
 );
 CREATE TABLE Location (
 	locID          char(5) PRIMARY KEY,
@@ -70,8 +69,12 @@ CREATE TABLE WorksAt (
 	location_id    INTEGER,
 	PRIMARY KEY (essn, location_id)
 );
-ALTER TABLE Employee
-ADD FOREIGN KEY (location_id) references WorksAt(location_id)
+ALTER TABLE WorksAt
+ADD FOREIGN KEY (essn) references Employee(ssn)
+Deferrable initially deferred;
+--
+ALTER TABLE WorksAt
+ADD FOREIGN KEY (location_id) references Location(locID)
 Deferrable initially deferred;
 --
 ALTER TABLE Location

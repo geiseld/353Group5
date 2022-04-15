@@ -328,7 +328,24 @@ WHERE D.dname NOT IN
 	 WHERE D.dname = DI.dish_name AND DI.ingredient = Sup.ingredient AND Sup.vendor_id = S.vendor_id AND 
 	       S.vendor_id = V.vid AND V.vname = 'Martys Meats')
 ORDER BY D.dname;
+--
+--
 -- Q8 - A relational DIVISION query.
+-- For every location that receives every shipment of goods of quantity 25, 
+-- list the location id, address, and managar ssn.
+SELECT L.locID, L.address, L.mgr_ssn
+FROM   Location L
+WHERE  NOT EXISTS (
+      (SELECT S.location_id
+       FROM   Supply S
+       WHERE  S.quantity = '25')
+       MINUS
+      (SELECT Sup.location_id
+       FROM Suppliers Sup
+       WHERE L.locID = Sup.location_id))
+ORDER BY L.address;
+--
+--
 -- Q9 - An outer join query.
 --
 /*< The insert/delete/update statements to test the enforcement of ICs >

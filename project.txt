@@ -1,0 +1,774 @@
+SQL> SET ECHO ON
+SQL> /*
+SQL> CIS 353 - Database Design Project
+SQL> Casey Systema
+SQL> David Geisel
+SQL> Fabian Kirberg
+SQL> Lin Hao Yuan
+SQL> */
+SQL> DROP TABLE Employee cascade constraints;
+
+Table dropped.
+
+SQL> DROP TABLE Location cascade constraints;
+
+Table dropped.
+
+SQL> DROP TABLE Dish cascade constraints;
+
+Table dropped.
+
+SQL> DROP TABLE Vendor cascade constraints;
+
+Table dropped.
+
+SQL> DROP TABLE Ingredient cascade constraints;
+
+Table dropped.
+
+SQL> DROP TABLE Supply cascade constraints;
+
+Table dropped.
+
+SQL> DROP TABLE Allergies cascade constraints;
+
+Table dropped.
+
+SQL> DROP TABLE DishIngredients cascade constraints;
+
+Table dropped.
+
+SQL> DROP TABLE Suppliers cascade constraints;
+
+Table dropped.
+
+SQL> DROP TABLE OnMenu cascade constraints;
+
+Table dropped.
+
+SQL> DROP TABLE WorksAt cascade constraints;
+
+Table dropped.
+
+SQL> 
+SQL> 
+SQL> --< The SQL/DDL code that creates your schema >
+SQL> CREATE TABLE Employee (
+  2  	     ssn	    INTEGER NOT NULL,
+  3  	     start_date     char(8), --Dates are of the form XX/XX/XX--
+  4  	     title	    char(15),
+  5  	     hourly_rate    INTEGER,
+  6  	     CONSTRAINT employeeKey PRIMARY KEY (ssn),
+  7  	     CONSTRAINT employeePayOverZero CHECK (hourly_rate > 0),
+  8  	     CONSTRAINT managerPayOverTwenty CHECK (NOT(title = 'Manager' AND hourly_rate <= 20))
+  9  );
+
+Table created.
+
+SQL> CREATE TABLE Location (
+  2  	     locID	    char(5) PRIMARY KEY,
+  3  	     address	    char(25),
+  4  	     capacity	    INTEGER,
+  5  	     mgr_ssn	    INTEGER,
+  6  	     num_employees  INTEGER
+  7  );
+
+Table created.
+
+SQL> CREATE TABLE Dish (
+  2  	     dname	    char(30) PRIMARY KEY,
+  3  	     dprice	    INTEGER,
+  4  	     dcalories	    INTEGER,
+  5  	     allergies	    char(25) --TODO: modify this so it's a MV attribute--
+  6  );
+
+Table created.
+
+SQL> CREATE TABLE Vendor (
+  2  	     vname	    char(15),
+  3  	     vid	    INTEGER PRIMARY KEY
+  4  );
+
+Table created.
+
+SQL> CREATE TABLE Ingredient (
+  2  	     name	    char(20) PRIMARY KEY
+  3  );
+
+Table created.
+
+SQL> CREATE TABLE Supply (
+  2  	     vendor_id	    INTEGER,
+  3  	     location_id    char(5),
+  4  	     ingredient     char(20),
+  5  	     date_supplied  char(8),
+  6  	     quantity	    INTEGER,
+  7  	     PRIMARY KEY (vendor_id, location_id, ingredient, date_supplied)
+  8  );
+
+Table created.
+
+SQL> CREATE TABLE Allergies (
+  2  	     dish_name	    char(30),
+  3  	     allergies	    char(25),
+  4  	     PRIMARY KEY (dish_name, allergies)
+  5  );
+
+Table created.
+
+SQL> CREATE TABLE Suppliers (
+  2  	     vendor_id	    INTEGER,
+  3  	     location_id    char(5),
+  4  	     PRIMARY KEY (vendor_id, location_id)
+  5  );
+
+Table created.
+
+SQL> CREATE TABLE DishIngredients (
+  2  	     dish_name	    char(30),
+  3  	     ingredient     char(20),
+  4  	     PRIMARY KEY (dish_name, ingredient)
+  5  );
+
+Table created.
+
+SQL> CREATE TABLE OnMenu (
+  2  	     location_id    char(5),
+  3  	     dish_name	    char(30),
+  4  	     date_added     char(8),
+  5  	     PRIMARY KEY (location_id, dish_name)
+  6  );
+
+Table created.
+
+SQL> CREATE TABLE WorksAt (
+  2  	     essn	    INTEGER,
+  3  	     location_id    char(5),
+  4  	     PRIMARY KEY (essn, location_id)
+  5  );
+
+Table created.
+
+SQL> ALTER TABLE WorksAt
+  2  ADD FOREIGN KEY (essn) references Employee(ssn)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --
+SQL> ALTER TABLE WorksAt
+  2  ADD FOREIGN KEY (location_id) references Location(locID)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --
+SQL> ALTER TABLE Location
+  2  ADD FOREIGN KEY (mgr_ssn) references Employee(ssn)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --
+SQL> ALTER TABLE Supply
+  2  ADD FOREIGN KEY (vendor_id) references Vendor(vid)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --
+SQL> ALTER TABLE Supply
+  2  ADD FOREIGN KEY (location_id) references Location(locID)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --
+SQL> ALTER TABLE Allergies
+  2  ADD FOREIGN KEY (dish_name) references Dish(dname)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --
+SQL> ALTER TABLE Suppliers
+  2  ADD FOREIGN KEY (vendor_id) references Vendor(vid)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --
+SQL> ALTER TABLE Suppliers
+  2  ADD FOREIGN KEY (location_id) references Location(locID)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --
+SQL> ALTER TABLE DishIngredients
+  2  ADD FOREIGN KEY (dish_name) references Dish(dname)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --
+SQL> /*
+SQL> This causes commit errors, however removing it unlinks the Ingredient table from the rest of the database. Not sure what to do. -Fabian
+SQL> 
+SQL> ALTER TABLE DishIngredients
+SQL> ADD FOREIGN KEY (ingredient) references Ingredient(name)
+SQL> Deferrable initially deferred;
+SQL> */
+SQL> --
+SQL> ALTER TABLE OnMenu
+  2  ADD FOREIGN KEY (dish_name) references Dish(dname)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --
+SQL> ALTER TABLE OnMenu
+  2  ADD FOREIGN KEY (location_id) references Location(locID)
+  3  Deferrable initially deferred;
+
+Table altered.
+
+SQL> --In the DDL, every IC must have a unique name; e.g. IC5, IC10, IC15, etc.
+SQL> --
+SQL> SET FEEDBACK OFF
+SQL> --< The INSERT statements that populate the tables>
+SQL> --Important: Keep the number of rows in each table small enough so that the results of your
+SQL> --queries can be verified by hand. See the Sailors database as an example.
+SQL> --
+SQL> --
+SQL> INSERT INTO Employee VALUES (111111111, '01-14-15', 'Manager', 25);
+SQL> INSERT INTO Employee VALUES (222222222, '03-22-16', 'Cook', 15);
+SQL> INSERT INTO Employee VALUES (333333333, '03-08-16', 'Waiter', 10);
+SQL> INSERT INTO Employee VALUES (444444444, '01-30-15', 'Waiter', 10);
+SQL> INSERT INTO Employee VALUES (555555555, '03-19-16', 'Manager', 25);
+SQL> INSERT INTO Employee VALUES (666666666, '01-11-15', 'Cook', 17);
+SQL> INSERT INTO Employee VALUES (777777777, '05-02-17', 'Hostess', 13);
+SQL> INSERT INTO Employee VALUES (888888888, '06-15-17', 'Hostess', 12);
+SQL> --
+SQL> --
+SQL> INSERT INTO Location VALUES ('1', '123 Main Street', 100, 111111111, 4);
+SQL> INSERT INTO Location VALUES ('2', '456 North Avenue', 80, 555555555, 4);
+SQL> --
+SQL> --
+SQL> INSERT INTO Dish VALUES ('Spaghetti Bolognese', 15, 1000, NULL);
+SQL> INSERT INTO Dish VALUES ('Chicken Alfredo', 20, 1250, NULL);
+SQL> INSERT INTO Dish VALUES ('Shrimp Pesto', 22, 850, 'Shellfish');
+SQL> INSERT INTO Dish VALUES ('Thai Peanut Chicken Noodles', 20, 1100, 'Peanut');
+SQL> INSERT INTO Dish VALUES ('Pasta Primavera', 18, 950, NULL);
+SQL> --
+SQL> --
+SQL> INSERT INTO Vendor VALUES ('Neds Noodles', 1);
+SQL> INSERT INTO Vendor VALUES ('Martys Meats', 2);
+SQL> INSERT INTO Vendor VALUES ('Franks Fish', 3);
+SQL> INSERT INTO Vendor VALUES ('Vinces Veggies', 4);
+SQL> INSERT INTO Vendor VALUES ('Normans Nuts', 5);
+SQL> INSERT INTO Vendor VALUES ('Sams Sauces', 6);
+SQL> --
+SQL> --
+SQL> INSERT INTO Ingredient VALUES ('Spaghetti');
+SQL> INSERT INTO Ingredient VALUES ('Penne');
+SQL> INSERT INTO Ingredient VALUES ('Fettuccine');
+SQL> INSERT INTO Ingredient VALUES ('Beef');
+SQL> INSERT INTO Ingredient VALUES ('Chicken');
+SQL> INSERT INTO Ingredient VALUES ('Shrimp');
+SQL> INSERT INTO Ingredient VALUES ('Marinara Sauce');
+SQL> INSERT INTO Ingredient VALUES ('Alfredo Sauce');
+SQL> INSERT INTO Ingredient VALUES ('Pesto Sauce');
+SQL> INSERT INTO Ingredient VALUES ('Mixed Vegetables');
+SQL> INSERT INTO Ingredient VALUES ('Peanut Sauce');
+SQL> --
+SQL> --
+SQL> INSERT INTO Supply VALUES (1, '1', 'Spaghetti', '01-12-22', 50);
+SQL> INSERT INTO Supply VALUES (1, '2', 'Spaghetti', '01-12-22', 40);
+SQL> INSERT INTO Supply VALUES (1, '1', 'Penne', '01-12-22', 50);
+SQL> INSERT INTO Supply VALUES (1, '2', 'Penne', '01-12-22', 40);
+SQL> INSERT INTO Supply VALUES (1, '1', 'Fettuccine', '01-12-22', 50);
+SQL> INSERT INTO Supply VALUES (1, '2', 'Fettuccine', '01-12-22', 40);
+SQL> INSERT INTO Supply VALUES (2, '1', 'Beef', '01-25-22', 25);
+SQL> INSERT INTO Supply VALUES (2, '2', 'Beef', '01-25-22', 20);
+SQL> INSERT INTO Supply VALUES (2, '1', 'Chicken', '01-25-22', 25);
+SQL> INSERT INTO Supply VALUES (2, '2', 'Chicken', '01-25-22', 20);
+SQL> INSERT INTO Supply VALUES (3, '1', 'Shrimp', '01-27-22', 25);
+SQL> INSERT INTO Supply VALUES (3, '2', 'Shrimp', '01-27-22', 20);
+SQL> INSERT INTO Supply VALUES (6, '1', 'Marinara Sauce', '01-16-22', 60);
+SQL> INSERT INTO Supply VALUES (6, '2', 'Marinara Sauce', '01-16-22', 50);
+SQL> INSERT INTO Supply VALUES (6, '1', 'Pesto Sauce', '01-16-22', 48);
+SQL> INSERT INTO Supply VALUES (6, '2', 'Pesto Sauce', '01-16-22', 38);
+SQL> INSERT INTO Supply VALUES (6, '1', 'Alfredo Sauce', '01-16-22', 60);
+SQL> INSERT INTO Supply VALUES (6, '2', 'Alfredo Sauce', '01-16-22', 50);
+SQL> INSERT INTO Supply VALUES (5, '1', 'Peanut Sauce', '01-19-22', 45);
+SQL> INSERT INTO Supply VALUES (5, '2', 'Peanut Sauce', '01-19-22', 35);
+SQL> INSERT INTO Supply VALUES (4, '1', 'Mixed Vegetables', '01-26-22', 50);
+SQL> INSERT INTO Supply VALUES (4, '2', 'Mixed Vegetables', '01-26-22', 40);
+SQL> --
+SQL> --
+SQL> INSERT INTO Allergies VALUES ('Shrimp Pesto', 'Shellfish');
+SQL> INSERT INTO Allergies VALUES ('Thai Peanut Chicken Noodles', 'Peanut');
+SQL> --
+SQL> --
+SQL> INSERT INTO Suppliers VALUES (1, '1');
+SQL> INSERT INTO Suppliers VALUES (1, '2');
+SQL> INSERT INTO Suppliers VALUES (2, '1');
+SQL> INSERT INTO Suppliers VALUES (2, '2');
+SQL> INSERT INTO Suppliers VALUES (3, '1');
+SQL> INSERT INTO Suppliers VALUES (3, '2');
+SQL> INSERT INTO Suppliers VALUES (4, '1');
+SQL> INSERT INTO Suppliers VALUES (4, '2');
+SQL> INSERT INTO Suppliers VALUES (5, '1');
+SQL> INSERT INTO Suppliers VALUES (5, '2');
+SQL> INSERT INTO Suppliers VALUES (6, '1');
+SQL> INSERT INTO Suppliers VALUES (6, '2');
+SQL> --
+SQL> --
+SQL> INSERT INTO DishIngredients VALUES ('Spaghetti Bolognese', 'Spaghetti');
+SQL> INSERT INTO DishIngredients VALUES ('Spaghetti Bolognese', 'Beef');
+SQL> INSERT INTO DishIngredients VALUES ('Spaghetti Bolognese', 'Marinara Sauce');
+SQL> INSERT INTO DishIngredients VALUES ('Chicken Alfredo', 'Fettuccine');
+SQL> INSERT INTO DishIngredients VALUES ('Chicken Alfredo', 'Chicken');
+SQL> INSERT INTO DishIngredients VALUES ('Chicken Alfredo', 'Alfredo');
+SQL> INSERT INTO DishIngredients VALUES ('Shrimp Pesto', 'Penne');
+SQL> INSERT INTO DishIngredients VALUES ('Shrimp Pesto', 'Shrimp');
+SQL> INSERT INTO DishIngredients VALUES ('Shrimp Pesto', 'Pesto');
+SQL> INSERT INTO DishIngredients VALUES ('Thai Peanut Chicken Noodles', 'Spaghetti');
+SQL> INSERT INTO DishIngredients VALUES ('Thai Peanut Chicken Noodles', 'Chicken');
+SQL> INSERT INTO DishIngredients VALUES ('Thai Peanut Chicken Noodles', 'Peanut Sauce');
+SQL> INSERT INTO DishIngredients VALUES ('Pasta Primavera', 'Penne');
+SQL> INSERT INTO DishIngredients VALUES ('Pasta Primavera', 'Mixed Vegetables');
+SQL> --
+SQL> --
+SQL> INSERT INTO OnMenu VALUES ('1', 'Spaghetti Bolognese', '01-31-15');
+SQL> INSERT INTO OnMenu VALUES ('1', 'Chicken Alfredo', '01-31-15');
+SQL> INSERT INTO OnMenu VALUES ('1', 'Shrimp Pesto', '01-31-15');
+SQL> INSERT INTO OnMenu VALUES ('1', 'Thai Peanut Chicken Noodles', '01-31-15');
+SQL> INSERT INTO OnMenu VALUES ('1', 'Pasta Primavera', '01-31-15');
+SQL> INSERT INTO OnMenu VALUES ('2', 'Spaghetti Bolognese', '03-25-15');
+SQL> INSERT INTO OnMenu VALUES ('2', 'Chicken Alfredo', '03-25-15');
+SQL> INSERT INTO OnMenu VALUES ('2', 'Shrimp Pesto', '03-25-15');
+SQL> INSERT INTO OnMenu VALUES ('2', 'Thai Peanut Chicken Noodles', '03-25-15');
+SQL> INSERT INTO OnMenu VALUES ('2', 'Pasta Primavera', '03-25-15');
+SQL> --
+SQL> --
+SQL> INSERT INTO WorksAt VALUES (111111111, '1');
+SQL> INSERT INTO WorksAt VALUES (222222222, '2');
+SQL> INSERT INTO WorksAt VALUES (333333333, '2');
+SQL> INSERT INTO WorksAt VALUES (444444444, '1');
+SQL> INSERT INTO WorksAt VALUES (555555555, '2');
+SQL> INSERT INTO WorksAt VALUES (666666666, '1');
+SQL> INSERT INTO WorksAt VALUES (777777777, '1');
+SQL> INSERT INTO WorksAt VALUES (888888888, '2');
+SQL> --
+SQL> SET FEEDBACK ON
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> --< One query (per table) of the form: SELECT * FROM table; in order to display your database >
+SQL> SELECT * from Employee;
+
+       SSN START_DA TITLE           HOURLY_RATE                                 
+---------- -------- --------------- -----------                                 
+ 111111111 01-14-15 Manager                  25                                 
+ 222222222 03-22-16 Cook                     15                                 
+ 333333333 03-08-16 Waiter                   10                                 
+ 444444444 01-30-15 Waiter                   10                                 
+ 555555555 03-19-16 Manager                  25                                 
+ 666666666 01-11-15 Cook                     17                                 
+ 777777777 05-02-17 Hostess                  13                                 
+ 888888888 06-15-17 Hostess                  12                                 
+
+8 rows selected.
+
+SQL> SELECT * from Dish;
+
+DNAME                              DPRICE  DCALORIES ALLERGIES                  
+------------------------------ ---------- ---------- -------------------------  
+Spaghetti Bolognese                    15       1000                            
+Chicken Alfredo                        20       1250                            
+Shrimp Pesto                           22        850 Shellfish                  
+Thai Peanut Chicken Noodles            20       1100 Peanut                     
+Pasta Primavera                        18        950                            
+
+5 rows selected.
+
+SQL> SELECT * from Vendor;
+
+VNAME                  VID                                                      
+--------------- ----------                                                      
+Neds Noodles             1                                                      
+Martys Meats             2                                                      
+Franks Fish              3                                                      
+Vinces Veggies           4                                                      
+Normans Nuts             5                                                      
+Sams Sauces              6                                                      
+
+6 rows selected.
+
+SQL> SELECT * from Location;
+
+LOCID ADDRESS                     CAPACITY    MGR_SSN NUM_EMPLOYEES             
+----- ------------------------- ---------- ---------- -------------             
+1     123 Main Street                  100  111111111             4             
+2     456 North Avenue                  80  555555555             4             
+
+2 rows selected.
+
+SQL> SELECT * FROM Ingredient;
+
+NAME                                                                            
+--------------------                                                            
+Alfredo Sauce                                                                   
+Beef                                                                            
+Chicken                                                                         
+Fettuccine                                                                      
+Marinara Sauce                                                                  
+Mixed Vegetables                                                                
+Peanut Sauce                                                                    
+Penne                                                                           
+Pesto Sauce                                                                     
+Shrimp                                                                          
+Spaghetti                                                                       
+
+11 rows selected.
+
+SQL> SELECT * FROM Supply;
+
+ VENDOR_ID LOCAT INGREDIENT           DATE_SUP   QUANTITY                       
+---------- ----- -------------------- -------- ----------                       
+         1 1     Spaghetti            01-12-22         50                       
+         1 2     Spaghetti            01-12-22         40                       
+         1 1     Penne                01-12-22         50                       
+         1 2     Penne                01-12-22         40                       
+         1 1     Fettuccine           01-12-22         50                       
+         1 2     Fettuccine           01-12-22         40                       
+         2 1     Beef                 01-25-22         25                       
+         2 2     Beef                 01-25-22         20                       
+         2 1     Chicken              01-25-22         25                       
+         2 2     Chicken              01-25-22         20                       
+         3 1     Shrimp               01-27-22         25                       
+
+ VENDOR_ID LOCAT INGREDIENT           DATE_SUP   QUANTITY                       
+---------- ----- -------------------- -------- ----------                       
+         3 2     Shrimp               01-27-22         20                       
+         6 1     Marinara Sauce       01-16-22         60                       
+         6 2     Marinara Sauce       01-16-22         50                       
+         6 1     Pesto Sauce          01-16-22         48                       
+         6 2     Pesto Sauce          01-16-22         38                       
+         6 1     Alfredo Sauce        01-16-22         60                       
+         6 2     Alfredo Sauce        01-16-22         50                       
+         5 1     Peanut Sauce         01-19-22         45                       
+         5 2     Peanut Sauce         01-19-22         35                       
+         4 1     Mixed Vegetables     01-26-22         50                       
+         4 2     Mixed Vegetables     01-26-22         40                       
+
+22 rows selected.
+
+SQL> SELECT * FROM Allergies;
+
+DISH_NAME                      ALLERGIES                                        
+------------------------------ -------------------------                        
+Shrimp Pesto                   Shellfish                                        
+Thai Peanut Chicken Noodles    Peanut                                           
+
+2 rows selected.
+
+SQL> SELECT * FROM Suppliers;
+
+ VENDOR_ID LOCAT                                                                
+---------- -----                                                                
+         1 1                                                                    
+         1 2                                                                    
+         2 1                                                                    
+         2 2                                                                    
+         3 1                                                                    
+         3 2                                                                    
+         4 1                                                                    
+         4 2                                                                    
+         5 1                                                                    
+         5 2                                                                    
+         6 1                                                                    
+
+ VENDOR_ID LOCAT                                                                
+---------- -----                                                                
+         6 2                                                                    
+
+12 rows selected.
+
+SQL> SELECT * FROM OnMenu;
+
+LOCAT DISH_NAME                      DATE_ADD                                   
+----- ------------------------------ --------                                   
+1     Spaghetti Bolognese            01-31-15                                   
+1     Chicken Alfredo                01-31-15                                   
+1     Shrimp Pesto                   01-31-15                                   
+1     Thai Peanut Chicken Noodles    01-31-15                                   
+1     Pasta Primavera                01-31-15                                   
+2     Spaghetti Bolognese            03-25-15                                   
+2     Chicken Alfredo                03-25-15                                   
+2     Shrimp Pesto                   03-25-15                                   
+2     Thai Peanut Chicken Noodles    03-25-15                                   
+2     Pasta Primavera                03-25-15                                   
+
+10 rows selected.
+
+SQL> SELECT * FROM DishIngredients;
+
+DISH_NAME                      INGREDIENT                                       
+------------------------------ --------------------                             
+Chicken Alfredo                Alfredo                                          
+Chicken Alfredo                Chicken                                          
+Chicken Alfredo                Fettuccine                                       
+Pasta Primavera                Mixed Vegetables                                 
+Pasta Primavera                Penne                                            
+Shrimp Pesto                   Penne                                            
+Shrimp Pesto                   Pesto                                            
+Shrimp Pesto                   Shrimp                                           
+Spaghetti Bolognese            Beef                                             
+Spaghetti Bolognese            Marinara Sauce                                   
+Spaghetti Bolognese            Spaghetti                                        
+
+DISH_NAME                      INGREDIENT                                       
+------------------------------ --------------------                             
+Thai Peanut Chicken Noodles    Chicken                                          
+Thai Peanut Chicken Noodles    Peanut Sauce                                     
+Thai Peanut Chicken Noodles    Spaghetti                                        
+
+14 rows selected.
+
+SQL> SELECT * FROM WorksAt;
+
+      ESSN LOCAT                                                                
+---------- -----                                                                
+ 111111111 1                                                                    
+ 222222222 2                                                                    
+ 333333333 2                                                                    
+ 444444444 1                                                                    
+ 555555555 2                                                                    
+ 666666666 1                                                                    
+ 777777777 1                                                                    
+ 888888888 2                                                                    
+
+8 rows selected.
+
+SQL> --
+SQL> /*< The SQL queries>. Include the following for each query:
+SQL> − A comment line stating the query number and the feature(s) it demonstrates
+SQL> (e.g. -- Q25 – correlated subquery).
+SQL> − A comment line stating the query in English.
+SQL> − The SQL code for the query */
+SQL> --
+SQL> -- Q1 - A join involving at least four relations.
+SQL> -- Select the location id, location address, and employee ssn of location that were supplied by 'Neds Noodles'.
+SQL> SELECT DISTINCT L.locID, L.address
+  2  FROM   Employee E, WorksAt W, Location L, Vendor V, Suppliers S
+  3  WHERE  E.ssn = W.essn AND W.location_id = L.locID AND L.locID = S.location_id AND
+  4  	    S.vendor_id = V.vid AND V.vname = 'Neds Noodles';
+
+LOCID ADDRESS                                                                   
+----- -------------------------                                                 
+1     123 Main Street                                                           
+2     456 North Avenue                                                          
+
+2 rows selected.
+
+SQL> --
+SQL> --
+SQL> -- Q2 - A self-join.
+SQL> -- Select non equals pairs of ingredients that were supplied to Location 2 where ingredient 1 was supplied on 01-12-22 and has a lower quantity that ingredient 2.
+SQL> SELECT DISTINCT S1.ingredient, S2.ingredient
+  2  FROM Supply S1, Supply S2
+  3  WHERE S1.location_id = '2' AND S2.location_id = '2' AND S1.ingredient != S2.ingredient AND S1.quantity < S2.quantity AND S1.date_supplied = '01-12-22'
+  4  ORDER BY S1.ingredient;
+
+INGREDIENT           INGREDIENT                                                 
+-------------------- --------------------                                       
+Fettuccine           Alfredo Sauce                                              
+Fettuccine           Marinara Sauce                                             
+Penne                Alfredo Sauce                                              
+Penne                Marinara Sauce                                             
+Spaghetti            Alfredo Sauce                                              
+Spaghetti            Marinara Sauce                                             
+
+6 rows selected.
+
+SQL> --
+SQL> --
+SQL> -- Q3 - UNION, INTERSECT, and/or MINUS.
+SQL> -- Select all employees with an hourly rate above 15 and don't work at location 2.
+SQL> SELECT E.ssn
+  2  FROM   Employee E
+  3  WHERE  E.hourly_rate > 15
+  4  MINUS
+  5  SELECT E.ssn
+  6  FROM   Employee E, WorksAT W
+  7  WHERE  E.ssn = W.essn AND W.location_id = '2';
+
+       SSN                                                                      
+----------                                                                      
+ 111111111                                                                      
+ 666666666                                                                      
+
+2 rows selected.
+
+SQL> --
+SQL> --
+SQL> -- Q4 - SUM, AVG, MAX, and/or MIN.
+SQL> -- Select the sum of the calories of all dishs that include the 'Penne' ingredient.
+SQL> SELECT SUM(D.dcalories) AS "Total Calories of Penne dishes"
+  2  FROM   Dish D, DishIngredients I
+  3  WHERE  D.dname = I.dish_name AND I.ingredient = 'Penne';
+
+Total Calories of Penne dishes                                                  
+------------------------------                                                  
+                          1800                                                  
+
+1 row selected.
+
+SQL> --
+SQL> --
+SQL> -- Q5 - GROUP BY, HAVING, and ORDER BY, all appearing in the same query.
+SQL> -- Select the name and price of all dishes that have more than 2 ingredients and order them by price.
+SQL> SELECT D.dname, D.dprice
+  2  FROM   Dish D, DishIngredients I
+  3  WHERE  D.dname = I.dish_name
+  4  GROUP BY D.dname, D.dprice
+  5  HAVING COUNT(*) > 2
+  6  ORDER BY D.dprice;
+
+DNAME                              DPRICE                                       
+------------------------------ ----------                                       
+Spaghetti Bolognese                    15                                       
+Chicken Alfredo                        20                                       
+Thai Peanut Chicken Noodles            20                                       
+Shrimp Pesto                           22                                       
+
+4 rows selected.
+
+SQL> --
+SQL> --
+SQL> -- Q6 - A correlated subquery.
+SQL> -- Select the ssn of each employee who has the highest salary in their restaurant
+SQL> SELECT E1.ssn
+  2  FROM Employee E1
+  3  WHERE E1.hourly_rate =
+  4  	     (SELECT MAX(E2.hourly_rate)
+  5  	      FROM Employee E2, WorksAt W1, WorksAt W2
+  6  	      WHERE E1.ssn = W1.essn AND E2.ssn = W2.essn AND W1.location_id = W2.location_id)
+  7  ORDER BY E1.ssn;
+
+       SSN                                                                      
+----------                                                                      
+ 111111111                                                                      
+ 555555555                                                                      
+
+2 rows selected.
+
+SQL> --
+SQL> --
+SQL> -- Q7 - A non-correlated subquery.
+SQL> -- Select the dish name of all dishes that do not rely on ingredients being supplied by Martys Meats.
+SQL> SELECT D.dname, D.dprice
+  2  FROM Dish D
+  3  WHERE D.dname NOT IN
+  4  	     (SELECT D.dname
+  5  	      FROM Dish D, DishIngredients DI, Supply Sup, Suppliers S, Vendor V
+  6  	      WHERE D.dname = DI.dish_name AND DI.ingredient = Sup.ingredient AND Sup.vendor_id = S.vendor_id AND
+  7  		    S.vendor_id = V.vid AND V.vname = 'Martys Meats')
+  8  ORDER BY D.dname;
+
+DNAME                              DPRICE                                       
+------------------------------ ----------                                       
+Pasta Primavera                        18                                       
+Shrimp Pesto                           22                                       
+
+2 rows selected.
+
+SQL> --
+SQL> --
+SQL> -- Q8 - A relational DIVISION query.
+SQL> -- For every location that receives every shipment of goods of quantity 25,
+SQL> -- list the location id, address, and managar ssn.
+SQL> SELECT L.locID, L.address, L.mgr_ssn
+  2  FROM   Location L
+  3  WHERE  NOT EXISTS (
+  4  	   (SELECT S.location_id
+  5  	    FROM   Supply S
+  6  	    WHERE  S.quantity = '25')
+  7  	    MINUS
+  8  	   (SELECT Sup.location_id
+  9  	    FROM Suppliers Sup
+ 10  	    WHERE L.locID = Sup.location_id))
+ 11  ORDER BY L.address;
+
+LOCID ADDRESS                      MGR_SSN                                      
+----- ------------------------- ----------                                      
+1     123 Main Street            111111111                                      
+
+1 row selected.
+
+SQL> --
+SQL> --
+SQL> -- Q9 - An outer join query.
+SQL> -- Show the SSN and title of every employee, also show the location id, address, and managar SSN of the
+SQL> -- location they work at.
+SQL> SELECT E.ssn, E.title, L.locID, L.address, L.mgr_ssn
+  2  FROM   Employee E, WorksAt W LEFT OUTER JOIN Location L ON W.location_id = L.locID
+  3  WHERE  E.ssn = W.essn;
+
+       SSN TITLE           LOCID ADDRESS                      MGR_SSN           
+---------- --------------- ----- ------------------------- ----------           
+ 111111111 Manager         1     123 Main Street            111111111           
+ 444444444 Waiter          1     123 Main Street            111111111           
+ 666666666 Cook            1     123 Main Street            111111111           
+ 777777777 Hostess         1     123 Main Street            111111111           
+ 222222222 Cook            2     456 North Avenue           555555555           
+ 333333333 Waiter          2     456 North Avenue           555555555           
+ 555555555 Manager         2     456 North Avenue           555555555           
+ 888888888 Hostess         2     456 North Avenue           555555555           
+
+8 rows selected.
+
+SQL> --
+SQL> --
+SQL> /*< The insert/delete/update statements to test the enforcement of ICs >
+SQL> Include the following items for every IC that you test (Important: see the next section titled
+SQL> “Submit a final report” regarding which ICs you need to test).
+SQL> − A comment line stating: Testing: < IC name>
+SQL> − A SQL INSERT, DELETE, or UPDATE that will test the IC.*/
+SQL> --
+SQL> -- Testing: employeeKey
+SQL> INSERT INTO Employee Values(NULL, '08/08/08', 'Line Cook', 10);
+INSERT INTO Employee Values(NULL, '08/08/08', 'Line Cook', 10)
+                            *
+ERROR at line 1:
+ORA-01400: cannot insert NULL into ("SYTSEMAC"."EMPLOYEE"."SSN") 
+
+
+SQL> --
+SQL> -- Testing: employeePayOverZero
+SQL> INSERT INTO Employee Values(111111112, '08/08/08', 'Line Cook', 0);
+INSERT INTO Employee Values(111111112, '08/08/08', 'Line Cook', 0)
+*
+ERROR at line 1:
+ORA-02290: check constraint (SYTSEMAC.EMPLOYEEPAYOVERZERO) violated 
+
+
+SQL> 
+SQL> -- Testing: managerPay
+SQL> INSERT INTO Employee Values(222222223, '07/07/07', 'Manager', 19);
+INSERT INTO Employee Values(222222223, '07/07/07', 'Manager', 19)
+*
+ERROR at line 1:
+ORA-02290: check constraint (SYTSEMAC.MANAGERPAYOVERTWENTY) violated 
+
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> --
+SQL> SPOOL OFF

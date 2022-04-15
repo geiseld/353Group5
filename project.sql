@@ -7,6 +7,18 @@ David Geisel
 Fabian Kirberg
 Lin Hao Yuan
 */
+DROP TABLE Employee cascade constraints;
+DROP TABLE Location cascade constraints;
+DROP TABLE Dish cascade constraints;
+DROP TABLE Vendor cascade constraints;
+DROP TABLE Ingredient cascade constraints;
+DROP TABLE Supply cascade constraints;
+DROP TABLE Allergies cascade constraints;
+DROP TABLE DishIngredients cascade constraints;
+DROP TABLE Suppliers cascade constraints;
+DROP TABLE OnMenu cascade constraints;
+DROP TABLE WorksAt cascade constraints;
+
 
 --< The SQL/DDL code that creates your schema >
 CREATE TABLE Employee (

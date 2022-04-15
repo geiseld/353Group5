@@ -14,7 +14,9 @@ CREATE TABLE Employee (
 	start_date     char(8), --Dates are of the form XX/XX/XX--
 	title          char(15),
 	hourly_rate    INTEGER,
-	CONSTRAINT employeeKey PRIMARY KEY (ssn)
+	CONSTRAINT employeeKey PRIMARY KEY (ssn),
+	CONSTRAINT employeePayOverZero CHECK (hourly_rate > 0),
+	CONSTRAINT managerPayOverTwenty CHECK (NOT(title = 'Manager' AND hourly_rate <= 20))
 );
 CREATE TABLE Location (
 	locID          char(5) PRIMARY KEY,
@@ -122,8 +124,6 @@ ALTER TABLE OnMenu
 ADD FOREIGN KEY (location_id) references Location(locID)
 Deferrable initially deferred;
 --In the DDL, every IC must have a unique name; e.g. IC5, IC10, IC15, etc.
-CONSTRAINT employeePayOverZero CHECK (Employee.hourly_rate > 0);
-CONSTRAINT managerPay CHECK (NOT(Employee.title = 'Manager' AND Employee.hourly_rate <= 20));
 --
 SET FEEDBACK OFF
 --< The INSERT statements that populate the tables>

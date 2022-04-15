@@ -13,7 +13,7 @@ CREATE TABLE Employee (
 	ssn	       INTEGER PRIMARY KEY,
 	start_date     char(8), --Dates are of the form XX/XX/XX--
 	title          char(15),
-	hourly_rate    INTEGER,
+	hourly_rate    INTEGER
 );
 CREATE TABLE Location (
 	locID          char(5) PRIMARY KEY,
@@ -241,6 +241,16 @@ INSERT INTO OnMenu VALUES ('2', 'Shrimp Pesto', '03-25-15');
 INSERT INTO OnMenu VALUES ('2', 'Thai Peanut Chicken Noodles', '03-25-15');
 INSERT INTO OnMenu VALUES ('2', 'Pasta Primavera', '03-25-15');
 --
+--
+INSERT INTO WorksAt VALUES (111111111, '1');
+INSERT INTO WorksAt VALUES (222222222, '2');
+INSERT INTO WorksAt VALUES (333333333, '2');
+INSERT INTO WorksAt VALUES (444444444, '1');
+INSERT INTO WorksAt VALUES (555555555, '2');
+INSERT INTO WorksAt VALUES (666666666, '1');
+INSERT INTO WorksAt VALUES (777777777, '1');
+INSERT INTO WorksAt VALUES (888888888, '2');
+--
 SET FEEDBACK ON
 COMMIT;
 --< One query (per table) of the form: SELECT * FROM table; in order to display your database >
@@ -254,6 +264,7 @@ SELECT * FROM Allergies;
 SELECT * FROM Suppliers;
 SELECT * FROM OnMenu;
 SELECT * FROM DishIngredients;
+SELECT * FROM WorksAt;
 --
 /*< The SQL queries>. Include the following for each query:
 − A comment line stating the query number and the feature(s) it demonstrates

@@ -339,10 +339,10 @@ Include the following items for every IC that you test (Important: see the next 
 --
 --
 -- Testing: employeePayOverZero
-INSERT INTO Employee Values(111111112, '08/08/08', 'Line Cook', 0, 12345);
+INSERT INTO Employee Values(111111112, '08/08/08', 'Line Cook', 0);
 
 -- Testing: managerPay
-INSERT INTO Employee Values(222222223, '07/07/07', 'Manager', 19, 12345);
+INSERT INTO Employee Values(222222223, '07/07/07', 'Manager', 19);
 COMMIT;
 --
 SPOOL OFF

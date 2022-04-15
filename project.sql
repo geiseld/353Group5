@@ -10,10 +10,11 @@ Lin Hao Yuan
 
 --< The SQL/DDL code that creates your schema >
 CREATE TABLE Employee (
-	ssn	       INTEGER PRIMARY KEY,
+	ssn	       INTEGER NOT NULL,
 	start_date     char(8), --Dates are of the form XX/XX/XX--
 	title          char(15),
-	hourly_rate    INTEGER
+	hourly_rate    INTEGER,
+	CONSTRAINT employeeKey PRIMARY KEY (ssn)
 );
 CREATE TABLE Location (
 	locID          char(5) PRIMARY KEY,
@@ -369,6 +370,8 @@ Include the following items for every IC that you test (Important: see the next 
 − A comment line stating: Testing: < IC name>
 − A SQL INSERT, DELETE, or UPDATE that will test the IC.*/
 --
+-- Testing: employeeKey
+INSERT INTO Employee Values(NULL, '08/08/08', 'Line Cook', 10);
 --
 -- Testing: employeePayOverZero
 INSERT INTO Employee Values(111111112, '08/08/08', 'Line Cook', 0);

@@ -296,11 +296,15 @@ MINUS
 SELECT E.ssn
 FROM   Employee E
 WHERE  E.location_id = '2';
+--
+--
 -- Q4 - SUM, AVG, MAX, and/or MIN.
 -- Select the sum of the calories of all dishs that include the 'Penne' ingredient.
 SELECT SUM(D.dcalories) AS "Total Calories of Penne dishes"
 FROM   Dish D, DishIngredients I
 WHERE  D.dname = I.dish_name AND I.ingredient = 'Penne';
+--
+--
 -- Q5 - GROUP BY, HAVING, and ORDER BY, all appearing in the same query.
 -- Select the name and price of all dishes that have more than 2 ingredients and order them by price.
 SELECT D.dname, D.dprice
@@ -309,6 +313,8 @@ WHERE  D.dname = I.dish_name
 GROUP BY D.dname, D.dprice
 HAVING COUNT(*) > 2
 ORDER BY D.dprice;
+--
+--
 -- Q6 - A correlated subquery.
 -- Select the ssn of each employee who has the highest salary in their restaurant
 SELECT E1.ssn
@@ -318,6 +324,8 @@ WHERE E1.hourly_rate =
 	 FROM Employee E2
 	 WHERE E1.location_id = E2.location_id)
 ORDER BY E1.ssn;
+--
+--
 -- Q7 - A non-correlated subquery.
 -- Select the dish name of all dishes that do not rely on ingredients being supplied by Martys Meats.
 SELECT D.dname, D.dprice
@@ -347,6 +355,11 @@ ORDER BY L.address;
 --
 --
 -- Q9 - An outer join query.
+-- Show the SSN, title, and location id of every employee, also show the address and managar SSN of the
+-- location they work at.
+SELECT E.ssn, E.title, E.location_id, L.address, L.mgr_ssn
+FROM   Employee E LEFT OUTER JOIN Location L ON E.location_id = L.locID;
+--
 --
 /*< The insert/delete/update statements to test the enforcement of ICs >
 Include the following items for every IC that you test (Important: see the next section titled

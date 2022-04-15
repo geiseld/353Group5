@@ -66,7 +66,7 @@ CREATE TABLE OnMenu (
 );
 CREATE TABLE WorksAt (
 	essn           INTEGER,
-	location_id    INTEGER,
+	location_id    char(5),
 	PRIMARY KEY (essn, location_id)
 );
 ALTER TABLE WorksAt
@@ -131,7 +131,7 @@ SET FEEDBACK OFF
 --
 --
 INSERT INTO Employee VALUES (111111111, '01-14-15', 'Manager', 25);
-INSERT INTO Employee VALUES (222222222, '03-22-16', 'Cook', 15,);
+INSERT INTO Employee VALUES (222222222, '03-22-16', 'Cook', 15);
 INSERT INTO Employee VALUES (333333333, '03-08-16', 'Waiter', 10);
 INSERT INTO Employee VALUES (444444444, '01-30-15', 'Waiter', 10);
 INSERT INTO Employee VALUES (555555555, '03-19-16', 'Manager', 25);
@@ -275,8 +275,9 @@ SELECT * FROM WorksAt;
 -- Q1 - A join involving at least four relations.
 -- Select the location id, location address, and employee ssn of location that were supplied by 'Neds Noodles'.
 SELECT DISTINCT L.locID, L.address
-FROM   Employee E, Location L, Vendor V, Suppliers S
-WHERE  E.location_id = L.locID AND L.locID = S.location_id AND S.vendor_id = V.vid AND V.vname = 'Neds Noodles';
+FROM   Employee E, WorksAt W, Location L, Vendor V, Suppliers S
+WHERE  E.ssn = W.essn AND W.location_id = L.locID AND L.locID = S.location_id AND 
+       S.vendor_id = V.vid AND V.vname = 'Neds Noodles';
 --
 --
 -- Q2 - A self-join.
@@ -294,8 +295,8 @@ FROM   Employee E
 WHERE  E.hourly_rate > 15
 MINUS
 SELECT E.ssn
-FROM   Employee E
-WHERE  E.location_id = '2';
+FROM   Employee E, WorksAT W
+WHERE  E.ssn = W.essn AND W.location_id = '2';
 --
 --
 -- Q4 - SUM, AVG, MAX, and/or MIN.
@@ -321,8 +322,8 @@ SELECT E1.ssn
 FROM Employee E1
 WHERE E1.hourly_rate = 
 	(SELECT MAX(E2.hourly_rate)
-	 FROM Employee E2
-	 WHERE E1.location_id = E2.location_id)
+	 FROM Employee E2, WorksAt W1, WorksAt W2
+	 WHERE E1.ssn = W1.essn AND E2.ssn = W2.essn AND W1.location_id = W2.location_id)
 ORDER BY E1.ssn;
 --
 --
@@ -355,10 +356,11 @@ ORDER BY L.address;
 --
 --
 -- Q9 - An outer join query.
--- Show the SSN, title, and location id of every employee, also show the address and managar SSN of the
+-- Show the SSN and title of every employee, also show the location id, address, and managar SSN of the
 -- location they work at.
-SELECT E.ssn, E.title, E.location_id, L.address, L.mgr_ssn
-FROM   Employee E LEFT OUTER JOIN Location L ON E.location_id = L.locID;
+SELECT E.ssn, E.title, L.locID, L.address, L.mgr_ssn
+FROM   Employee E, WorksAt W LEFT OUTER JOIN Location L ON W.location_id = L.locID
+WHERE  E.ssn = W.essn;
 --
 --
 /*< The insert/delete/update statements to test the enforcement of ICs >

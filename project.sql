@@ -130,14 +130,14 @@ SET FEEDBACK OFF
 --queries can be verified by hand. See the Sailors database as an example.
 --
 --
-INSERT INTO Employee VALUES (111111111, '01-14-15', 'Manager', 25, '1');
-INSERT INTO Employee VALUES (222222222, '03-22-16', 'Cook', 15, '2');
-INSERT INTO Employee VALUES (333333333, '03-08-16', 'Waiter', 10, '2');
-INSERT INTO Employee VALUES (444444444, '01-30-15', 'Waiter', 10, '1');
-INSERT INTO Employee VALUES (555555555, '03-19-16', 'Manager', 25, '2');
-INSERT INTO Employee VALUES (666666666, '01-11-15', 'Cook', 17, '1');
-INSERT INTO Employee VALUES (777777777, '05-02-17', 'Hostess', 13, '1');
-INSERT INTO Employee VALUES (888888888, '06-15-17', 'Hostess', 12, '2');
+INSERT INTO Employee VALUES (111111111, '01-14-15', 'Manager', 25);
+INSERT INTO Employee VALUES (222222222, '03-22-16', 'Cook', 15,);
+INSERT INTO Employee VALUES (333333333, '03-08-16', 'Waiter', 10);
+INSERT INTO Employee VALUES (444444444, '01-30-15', 'Waiter', 10);
+INSERT INTO Employee VALUES (555555555, '03-19-16', 'Manager', 25);
+INSERT INTO Employee VALUES (666666666, '01-11-15', 'Cook', 17);
+INSERT INTO Employee VALUES (777777777, '05-02-17', 'Hostess', 13);
+INSERT INTO Employee VALUES (888888888, '06-15-17', 'Hostess', 12);
 --
 --
 INSERT INTO Location VALUES ('1', '123 Main Street', 100, 111111111, 4);
